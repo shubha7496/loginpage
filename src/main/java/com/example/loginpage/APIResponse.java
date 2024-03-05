@@ -9,7 +9,14 @@ public class APIResponse {
     private Object error;
     
 
-    public APIResponse() {
+    public APIResponse(Integer status, Object data, Object error) {
+		super();
+		this.status = status;
+		this.data = data;
+		this.error = error;
+	}
+
+	public APIResponse() {
         this.status = HttpStatus.OK.value();
         this.data = data;
         this.error = error;
@@ -38,4 +45,7 @@ public class APIResponse {
     public void setError(Object error) {
         this.error = error;
     }
+  
+
+
 }

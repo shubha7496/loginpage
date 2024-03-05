@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.loginpage.APIResponse;
@@ -20,21 +22,27 @@ public class LoginService {
 
     @Autowired
     private UserRepository userRepository;
+    
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
     public APIResponse signUp(@Valid  SignUpRequestDTO signUpRequestDTO) {
         APIResponse apiResponse = new APIResponse();
+        if (userRepository.existsByEmailId(signUpRequestDTO.getEmailId())) {
+            apiResponse.setStatus(HttpStatus.CONFLICT.value());
+            apiResponse.setData("email already exists");
 
-        // validation
-
-        // dto to entity
+            return apiResponse;
+        }
         User userEntity = new User();
         userEntity.setName(signUpRequestDTO.getName());
         userEntity.setEmailId(signUpRequestDTO.getEmailId());
         userEntity.setGender(signUpRequestDTO.getGender());
         userEntity.setPhoneNumber(signUpRequestDTO.getPhoneNumber());
-        userEntity.setPassword(signUpRequestDTO.getPassword());
+        userEntity.setPassword(passwordEncoder.encode( signUpRequestDTO.getPassword()));
 
         // store entity
         userEntity = userRepository.save(userEntity);
@@ -81,4 +89,10 @@ public class LoginService {
 //
 //        return apiResponse;
     }
+    
+
+	public boolean emailExists(String emailId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
